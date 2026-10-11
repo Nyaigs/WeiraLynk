@@ -1,0 +1,7 @@
+sites/
+logs/
+*.log
+.env
+*.bak
+pwd.yml.bak
+pwd.yml.bak2
