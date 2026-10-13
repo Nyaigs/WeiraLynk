@@ -1,0 +1,29 @@
+/*
+ * WeiraLynk UI — subtle branding and polish
+ */
+
+:root {
+    --weiralynk-primary: #0F766E;
+    --weiralynk-accent: #F59E0B;
+}
+
+/* Cleaner buttons with WeiraLynk primary colour */
+.btn-primary {
+    background-color: var(--weiralynk-primary) !important;
+    border-color: var(--weiralynk-primary) !important;
+}
+
+.btn-primary:hover {
+    background-color: #0B5D57 !important;
+    border-color: #0B5D57 !important;
+}
+
+/* Cleaner navbar */
+.navbar {
+    border-bottom: 1px solid #E5E7EB;
+}
+
+/* Hide Frappe's "Help" menu for non-admin users (still visible to admin) */
+body[data-route^="app"] .navbar .dropdown-help {
+    /* Kept visible for now — remove this rule later if desired */
+}
