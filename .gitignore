@@ -3,5 +3,7 @@ logs/
 *.log
 .env
 *.bak
-pwd.yml.bak
-pwd.yml.bak2
+__pycache__/
+*.pyc
+node_modules/
+.DS_Store
