@@ -1,13 +1,11 @@
 /*
- * WeiraLynk UI — Role-based sidebar filtering
- * Hides workspaces that are not relevant to the logged-in user's role.
+ * WeiraLynk UI - Role-based sidebar filtering
  */
 
 (function () {
     "use strict";
 
-    // Which workspaces each role can see
-    const ROLE_WORKSPACES = {
+    var ROLE_WORKSPACES = {
         "Nurse": ["Home", "Healthcare", "Stock"],
         "Psychiatric Nurse": ["Home", "Healthcare", "Stock"],
         "Psychiatrist": ["Home", "Healthcare", "Stock"],
@@ -19,28 +17,33 @@
         "Manager": ["Home", "Healthcare", "Accounting", "Stock", "HR", "Users"],
         "Director": ["Home", "Healthcare", "Accounting", "Stock", "HR", "Users", "ERPNext Settings"],
         "Facility Admin": ["Home", "Healthcare", "Accounting", "Stock", "HR", "Users", "ERPNext Settings"],
-        "Security Staff": ["Home"],
+        "Security Staff": ["Home"]
     };
 
-    // Everyone with these roles sees everything
-    const UNRESTRICTED_ROLES = ["System Manager", "Administrator"];
+    var UNRESTRICTED_ROLES = ["System Manager", "Administrator"];
 
-    // Workspaces to always hide from non-admins (cosmetic clutter)
-    const ALWAYS_HIDE = [
-        "Quality",
-        "Support",
-        "Website",
-        "Tools",
-        "Integrations",
-        "Build",
-        "Payroll",
-        "Manufacturing",
-        "Projects",
-        "CRM",
-        "Assets",
-        "Buying",
-        "Selling",
-    ];
+    var ALL_WORKSPACES = {
+        "home": "Home",
+        "accounting": "Accounting",
+        "stock": "Stock",
+        "hr": "HR",
+        "users": "Users",
+        "healthcare": "Healthcare",
+        "erpnext-settings": "ERPNext Settings",
+        "quality": "Quality",
+        "support": "Support",
+        "website": "Website",
+        "tools": "Tools",
+        "integrations": "Integrations",
+        "build": "Build",
+        "payroll": "Payroll",
+        "manufacturing": "Manufacturing",
+        "projects": "Projects",
+        "crm": "CRM",
+        "assets": "Assets",
+        "buying": "Buying",
+        "selling": "Selling"
+    };
 
     function getUserRoles() {
         try {
@@ -51,79 +54,62 @@
     }
 
     function isUnrestricted(roles) {
-        return roles.some((r) => UNRESTRICTED_ROLES.includes(r));
+        return roles.some(function (r) {
+            return UNRESTRICTED_ROLES.indexOf(r) !== -1;
+        });
     }
 
     function getAllowedWorkspaces(roles) {
-        const allowed = new Set(["Home"]);
-        roles.forEach((role) => {
-            const list = ROLE_WORKSPACES[role];
+        var allowed = new Set(["Home"]);
+        roles.forEach(function (role) {
+            var list = ROLE_WORKSPACES[role];
             if (list) {
-                list.forEach((w) => allowed.add(w));
+                list.forEach(function (w) { allowed.add(w); });
             }
         });
         return allowed;
     }
 
     function hideSidebarItems() {
-        const roles = getUserRoles();
+        var roles = getUserRoles();
         if (!roles.length) return;
         if (isUnrestricted(roles)) return;
 
-        const allowed = getAllowedWorkspaces(roles);
+        var allowed = getAllowedWorkspaces(roles);
 
-        // Frappe v15 sidebar items
-        document.querySelectorAll(".sidebar-item-container").forEach((el) => {
-            const labelEl = el.querySelector(".sidebar-item-label");
-            if (!labelEl) return;
-            const label = labelEl.textContent.trim();
-            const normalized = label.replace(/^[^\w]+/, "").trim();
-
-            if (ALWAYS_HIDE.includes(normalized)) {
+        document.querySelectorAll(".sidebar-item-container").forEach(function (el) {
+            var link = el.querySelector("a");
+            if (!link) return;
+            var href = link.getAttribute("href") || "";
+            var match = href.match(/^\/app\/([^\/?#]+)$/);
+            if (!match) return;
+            var slug = match[1];
+            var workspaceName = ALL_WORKSPACES[slug];
+            if (!workspaceName) return;
+            if (!allowed.has(workspaceName)) {
                 el.style.display = "none";
-                return;
-            }
-
-            // Only apply the allowed-list rule to workspace links
-            const href = el.querySelector("a")?.getAttribute("href") || "";
-            if (href.includes("/app/") && href.split("/app/")[1]) {
-                const slug = href.split("/app/")[1].split("/")[0];
-                // If the slug matches a top-level workspace not in allowed, hide it
-                const isTopLevel = !slug.includes("-");
-                if (isTopLevel && !allowed.has(capitalize(slug))) {
-                    el.style.display = "none";
-                }
             }
         });
-
-        // Hide dropdown entries under Stock, Accounting, HR that are not in allowed
-        hideDropdowns(allowed);
     }
 
-    function hideDropdowns() {
-        // No-op placeholder — hooks can be added later
-    }
-
-    function capitalize(s) {
-        return s
-            .split("-")
-            .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-            .join(" ");
-    }
-
-    // Run on every page load
-    $(document).ready(function () {
-        setTimeout(hideSidebarItems, 1200);
-    });
-
-    // Run when the route changes
-    $(document).on("page-change", function () {
+    function run() {
         setTimeout(hideSidebarItems, 800);
+        setTimeout(hideSidebarItems, 2000);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", run);
+    } else {
+        run();
+    }
+
+    document.addEventListener("page-change", function () {
+        setTimeout(hideSidebarItems, 600);
     });
 
-    // Re-run when the sidebar collapses/expands
     document.addEventListener("click", function (e) {
-        if (e.target && e.target.classList && e.target.classList.contains("sidebar-toggle-btn")) {
+        var t = e.target;
+        if (t && t.closest && t.closest(".sidebar-toggle-btn")) {
             setTimeout(hideSidebarItems, 300);
         }
     });
