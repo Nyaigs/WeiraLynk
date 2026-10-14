@@ -5,5 +5,5 @@ app_description = "WeiraLynk seed configuration"
 app_email = "weiralynk@gmail.com"
 app_license = "mit"
 app_version = "0.1.0"
-app_include_js = "/assets/weiralynk/js/weiralynk_v2.js"
-app_include_css = "/assets/weiralynk/css/weiralynk_ui.css"
+
+app_include_js = "weiralynk.bundle.js"

@@ -1,23 +1,24 @@
 /*
- * WeiraLynk UI - Role-based sidebar filtering (text-label based)
+ * WeiraLynk UI - Role-based sidebar filtering
+ * Complete configuration for rehabilitation centres and mental health facilities.
  */
 
 (function () {
     "use strict";
 
     var ROLE_WORKSPACES = {
-        "Nurse": ["Home", "Healthcare", "Stock"],
-        "Psychiatric Nurse": ["Home", "Healthcare", "Stock"],
-        "Psychiatrist": ["Home", "Healthcare", "Stock"],
-        "Therapist": ["Home", "Healthcare"],
-        "Receptionist": ["Home", "Healthcare"],
-        "Pharmacist": ["Home", "Stock", "Accounting"],
-        "Kitchen Staff": ["Home", "Stock"],
-        "Accountant": ["Home", "Accounting", "Stock"],
-        "Manager": ["Home", "Healthcare", "Accounting", "Stock", "HR", "Users"],
-        "Director": ["Home", "Healthcare", "Accounting", "Stock", "HR", "Users", "ERPNext Settings"],
-        "Facility Admin": ["Home", "Healthcare", "Accounting", "Stock", "HR", "Users", "ERPNext Settings"],
-        "Security Staff": ["Home"]
+        "Nurse":              ["Home", "Healthcare", "Stock"],
+        "Psychiatric Nurse":  ["Home", "Healthcare", "Stock"],
+        "Psychiatrist":       ["Home", "Healthcare", "Stock"],
+        "Therapist":          ["Home", "Healthcare"],
+        "Receptionist":       ["Home", "Healthcare", "Accounting"],
+        "Pharmacist":         ["Home", "Stock", "Accounting", "Buying"],
+        "Kitchen Staff":      ["Home", "Stock"],
+        "Accountant":         ["Home", "Accounting", "Stock", "Buying", "HR", "Payroll", "Loans", "Assets"],
+        "Manager":            ["Home", "Accounting", "Stock", "HR", "Buying", "Users", "Healthcare", "Payroll", "Assets", "Loans"],
+        "Director":           ["Home", "Accounting", "Stock", "HR", "Buying", "Assets", "Users", "Healthcare", "Payroll", "Loans", "Mpesa", "ERPNext Settings"],
+        "Facility Admin":     ["Home", "Accounting", "Stock", "HR", "Buying", "Assets", "Users", "Healthcare", "Payroll", "Loans", "Mpesa", "ERPNext Settings"],
+        "Security Staff":     ["Home"]
     };
 
     var UNRESTRICTED_ROLES = ["System Manager", "Administrator"];
@@ -55,7 +56,7 @@
         var allowed = getAllowedWorkspaces(roles);
 
         document.querySelectorAll(".sidebar-item-container").forEach(function (el) {
-            var labelEl = el.querySelector(".sidebar-item-label, .standard-sidebar-label, .item-anchor");
+            var labelEl = el.querySelector(".sidebar-item-label");
             if (!labelEl) return;
             var label = (labelEl.textContent || "").trim();
             label = label.replace(/^[\s\u25B8\u25BE\u203A\u02C4\u02C5]+/, "").trim();
